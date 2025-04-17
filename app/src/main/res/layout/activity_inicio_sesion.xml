@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Inicio_sesion">
+
+    <ScrollView
+        android:id="@+id/scrollView2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="1dp"
+        android:layout_marginEnd="1dp"
+        android:layout_marginBottom="1dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="56dp" />
+
+            <TextView
+                android:id="@+id/textView"
+                android:textSize="35sp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scaleX="1"
+                android:gravity="center"
+                android:text="@string/inicio_sesion_tv_titulo_text" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="56dp" />
+
+            <EditText
+                android:id="@+id/is_edt_usuario"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="text"
+                android:minHeight="48dp"
+                android:minWidth="48dp"
+                android:autofillHints="name"
+                android:textColorHint="@android:color/black"
+                android:hint="@string/inicio_sesion_edt_usuario" />
+
+            <EditText
+                android:id="@+id/is_edt_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textPassword"
+                android:hint="@string/inicio_sesion_edt_password"
+                android:textColorHint="@android:color/black"
+                android:autofillHints="name"
+                android:minWidth="48dp"
+                android:minHeight="48dp"/>
+
+            <Button
+                android:id="@+id/is_bt_sign_in"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="sign_in"
+                android:text="@string/inicio_sesion_bt_sign_in" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/is_tv_sign_up"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textColor="@android:color/holo_blue_dark"
+                    android:textStyle="bold"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:minHeight="48dp"
+                    android:minWidth="48dp"
+                    android:gravity="center"
+                    android:text="@string/inicio_sesion_tv_sign_up" />
+
+                <TextView
+                    android:id="@+id/is_tv_forgot_pass"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textColor="@android:color/holo_blue_dark"
+                    android:textStyle="bold"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:minHeight="48dp"
+                    android:minWidth="48dp"
+                    android:gravity="center"
+                    android:text="@string/inicio_sesion_tv_forgot_pass" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

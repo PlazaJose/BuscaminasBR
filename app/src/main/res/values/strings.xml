@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">BuscaminasBR</string>
+
+    <string name="inicio_sesion_tv_titulo_text">Inicia sesión en BMBR</string>
+    <string name="inicio_sesion_edt_usuario">Nombre de usuario(NICK)</string>
+    <string name="inicio_sesion_edt_password">Contraseña</string>
+    <string name="inicio_sesion_bt_sign_in">SIGN IN</string>
+    <string name="inicio_sesion_tv_sign_up">SIGN UP</string>
+    <string name="inicio_sesion_tv_forgot_pass">Forgot Password?</string>
+
+    <string name="menu_juego_bt_rank">RANK</string>
+    <string name="menu_juego_bt_normal">NORMAL</string>
+    <string name="menu_juego_bt_ranking">VER RANKING</string>
 </resources>
