@@ -30,7 +30,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initiate(){
-        Intent intent = new Intent(this, Menu_juego.class);
+        //Intent intent = new Intent(this, Menu_juego.class);
+        Intent intent = new Intent(this, Inicio_sesion.class);
         startActivity(intent);
     }
 }
