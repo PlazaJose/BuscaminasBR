@@ -7,6 +7,17 @@
     <string name="inicio_sesion_bt_sign_in">SIGN IN</string>
     <string name="inicio_sesion_tv_sign_up">SIGN UP</string>
     <string name="inicio_sesion_tv_forgot_pass">Forgot Password?</string>
+    <string name="inicio_sesion_edt_server">IP del servidor</string>
+    <string name="inicio_sesion_switch_debug">debug mode</string>
+
+    <string name="creacion_cuenta_tv_titulo_text">Crea tu cuenta en BMBR</string>
+    <string name="creacion_cuenta_edt_usuario">Nombre de usuario(NICK)</string>
+    <string name="creacion_cuenta_edt_password">Contraseña</string>
+    <string name="creacion_cuenta_edt_nombre">Tu nombre real</string>
+    <string name="creacion_cuenta_bt_sign_up">SIGN UP</string>
+    <string name="creacion_cuenta_tv_sign_up">SIGN UP</string>
+    <string name="creacion_cuenta_tv_forgot_pass">Forgot Password?</string>
+    <string name="creacion_cuenta_edt_server">IP del servidor</string>
 
     <string name="menu_juego_bt_rank">RANK</string>
     <string name="menu_juego_bt_normal">NORMAL</string>

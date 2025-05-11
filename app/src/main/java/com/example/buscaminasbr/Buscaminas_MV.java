@@ -11,6 +11,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.buscaminasbr.model.Map;
+import com.example.buscaminasbr.view.MiniBM;
 
 public class Buscaminas_MV extends AppCompatActivity {
 
@@ -49,7 +50,7 @@ public class Buscaminas_MV extends AppCompatActivity {
                 RelativeLayout.LayoutParams.MATCH_PARENT,
                 RelativeLayout.LayoutParams.MATCH_PARENT));
 
-        GridLayout.LayoutParams gridParams = new GridLayout.LayoutParams();
+        //GridLayout.LayoutParams gridParams = new GridLayout.LayoutParams();
         gridLayout.setLayoutParams(new RelativeLayout.LayoutParams(
                 RelativeLayout.LayoutParams.WRAP_CONTENT,
                 RelativeLayout.LayoutParams.WRAP_CONTENT));
@@ -57,12 +58,33 @@ public class Buscaminas_MV extends AppCompatActivity {
         // Center the GridLayout using layout_centerInParent
         RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) gridLayout.getLayoutParams();
         layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+        layoutParams.topMargin = 250;
 
+        //create enemy viewa
+        MiniBM miniBM = new MiniBM(this);
+        GridLayout gridLayout_enemys = new GridLayout(this);
+        gridLayout_enemys.setRowCount(3);
+        gridLayout_enemys.setColumnCount(3);
+        gridLayout_enemys.setLayoutParams(new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.WRAP_CONTENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT));
+        RelativeLayout.LayoutParams layoutParams_enemy = (RelativeLayout.LayoutParams) gridLayout_enemys.getLayoutParams();
+        layoutParams_enemy.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+        layoutParams_enemy.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        layoutParams_enemy.bottomMargin = 250;
+
+        for(int i = 0; i < 9; i++){
+            MiniBM mbm = new MiniBM(this);
+            gridLayout_enemys.addView(mbm);
+        }
+
+        //gridLayout_enemys.addView(miniBM);
+        //add enemy views to relativelayout
+        relativeLayout.addView(gridLayout_enemys);
         // Add the GridLayout to the RelativeLayout
         relativeLayout.addView(gridLayout);
 
-        // Set the RelativeLayout as the content view of the activity
-        //setContentView(relativeLayout);
         return relativeLayout;
     }
 }

@@ -15,7 +15,8 @@ public class OKHttpMicroserviceExecutor {
     public OKHttpMicroserviceExecutor(){
 
     }
-    private final OkHttpClient client = new OkHttpClient();
+    private static final OkHttpClient client = new OkHttpClient();
+    public static final MediaType JSON = MediaType.get("application/json");
 
     public void llamarMicroservicioPost(String url, String jsonData, Inicio_sesion inicio_sesion) {
         RequestBody body = RequestBody.create(jsonData, MediaType.get("application/json; charset=utf-8"));
@@ -54,6 +55,23 @@ public class OKHttpMicroserviceExecutor {
                 e.printStackTrace();
             }
         });
+    }
+
+    public static String post(String url, String json) throws IOException {
+        RequestBody body = RequestBody.create(json, JSON);
+        Request request = new Request.Builder()
+                .url(url)
+                .post(body)
+                .build();
+        try (Response response = client.newCall(request).execute()) {
+            System.out.println("response: "+response);
+            if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+            assert response.body() != null;
+            return response.body().string();
+        }catch (Exception e){
+            System.out.println("error: "+e);
+            return "{\"entrada\":"+false+", \"nombre\": \""+e+"\"}";
+        }
     }
 
 }

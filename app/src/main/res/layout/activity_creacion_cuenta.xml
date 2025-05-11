@@ -5,8 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Inicio_sesion">
-
+    tools:context=".Creacion_cuenta">
     <ScrollView
         android:id="@+id/scrollView2"
         android:layout_width="0dp"
@@ -36,7 +35,7 @@
                 android:layout_height="wrap_content"
                 android:scaleX="1"
                 android:gravity="center"
-                android:text="@string/inicio_sesion_tv_titulo_text" />
+                android:text="@string/creacion_cuenta_tv_titulo_text" />
 
             <Space
                 android:layout_width="match_parent"
@@ -52,7 +51,7 @@
                 android:minWidth="48dp"
                 android:autofillHints="name"
                 android:textColorHint="@android:color/black"
-                android:hint="@string/inicio_sesion_edt_usuario" />
+                android:hint="@string/creacion_cuenta_edt_usuario" />
 
             <EditText
                 android:id="@+id/cc_edt_password"
@@ -60,7 +59,19 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:inputType="textPassword"
-                android:hint="@string/inicio_sesion_edt_password"
+                android:hint="@string/creacion_cuenta_edt_password"
+                android:textColorHint="@android:color/black"
+                android:autofillHints="name"
+                android:minWidth="48dp"
+                android:minHeight="48dp"/>
+
+            <EditText
+                android:id="@+id/cc_edt_nombre"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="text"
+                android:hint="@string/creacion_cuenta_edt_nombre"
                 android:textColorHint="@android:color/black"
                 android:autofillHints="name"
                 android:minWidth="48dp"
@@ -70,8 +81,8 @@
                 android:id="@+id/cc_bt_sign_up"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:onClick="sign_in"
-                android:text="@string/inicio_sesion_bt_sign_in" />
+                android:onClick="crear_cuenta"
+                android:text="@string/creacion_cuenta_bt_sign_up" />
 
             <Space
                 android:layout_width="match_parent"
@@ -89,47 +100,7 @@
                 android:textColorHint="@android:color/black"
                 android:hint="@string/inicio_sesion_edt_server"/>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/cc_tv_sign_up"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:gravity="center"
-                    android:minWidth="48dp"
-                    android:minHeight="48dp"
-                    android:text="@string/inicio_sesion_tv_sign_up"
-                    android:textColor="@android:color/holo_blue_dark"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/cc_tv_forgot_pass"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:gravity="center"
-                    android:minWidth="48dp"
-                    android:minHeight="48dp"
-                    android:text="@string/inicio_sesion_tv_forgot_pass"
-                    android:textColor="@android:color/holo_blue_dark"
-                    android:textStyle="bold" />
-            </LinearLayout>
-
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/is_sc_debug_mode"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/inicio_sesion_switch_debug"
-                android:padding="16dp"/>
-
         </LinearLayout>
     </ScrollView>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

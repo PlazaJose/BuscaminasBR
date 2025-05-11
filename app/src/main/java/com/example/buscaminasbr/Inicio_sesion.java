@@ -1,6 +1,7 @@
 package com.example.buscaminasbr;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -9,6 +10,7 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -19,6 +21,8 @@ import com.example.buscaminasbr.model.OKHttpMicroserviceExecutor;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+
 public class Inicio_sesion extends AppCompatActivity {
 
     EditText edt_usuario;
@@ -26,8 +30,10 @@ public class Inicio_sesion extends AppCompatActivity {
     TextView tv_sign_up;
     TextView tv_forgot_pass;
     TextView tv_title;
+    SwitchCompat sc_debug_mode;
     MicroserviceExecutor microserviceExecutor;
     OKHttpMicroserviceExecutor okHttpMicroserviceExecutor;
+    Boolean debug_mode = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,11 +44,12 @@ public class Inicio_sesion extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        edt_usuario = findViewById(R.id.is_edt_usuario);
-        edt_password = findViewById(R.id.is_edt_password);
-        tv_sign_up = findViewById(R.id.is_tv_sign_up);
-        tv_forgot_pass = findViewById(R.id.is_tv_forgot_pass);
-        tv_title = findViewById(R.id.tv_title);
+        edt_usuario = findViewById(R.id.cc_edt_usuario);
+        edt_password = findViewById(R.id.cc_edt_password);
+        tv_sign_up = findViewById(R.id.cc_tv_sign_up);
+        tv_forgot_pass = findViewById(R.id.cc_tv_forgot_pass);
+        tv_title = findViewById(R.id.tv_cc_title);
+        sc_debug_mode = findViewById(R.id.is_sc_debug_mode);
         setListeners();
         microserviceExecutor = new MicroserviceExecutor();
         okHttpMicroserviceExecutor = new OKHttpMicroserviceExecutor();
@@ -60,6 +67,9 @@ public class Inicio_sesion extends AppCompatActivity {
                 forgot_pass();
             }
         });
+        sc_debug_mode.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            debug_mode = isChecked;
+        });
     }
 
     private void sign_up(){
@@ -68,7 +78,11 @@ public class Inicio_sesion extends AppCompatActivity {
     private void forgot_pass(){
         Toast.makeText(this, "Botón forgot password pressed", Toast.LENGTH_SHORT).show();
     }
-    public void sign_in(View v){
+    public void sign_in(View v) throws IOException {
+        if(debug_mode){
+            inicio_rapido();
+            return;
+        }
         JSONObject datos = new JSONObject();
         try {
             datos.put("id", edt_usuario.getText().toString());
@@ -76,27 +90,84 @@ public class Inicio_sesion extends AppCompatActivity {
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
-        String jsonInputString = "{\"id\": \""+datos.optString("id", "noName")+"\", \"pas\": "+datos.optString("pas", "nopass")+"}";
+        String jsonInputString = "{\"id\": \""+datos.optString("id", "noName")+"\", \"pas\": \""+datos.optString("pas", "nopass")+"\"}";
         //microserviceExecutor.llamarMicroservicioPost("http://192.168.1.12:5101/cuenta/iniciar", this, datos);
-        okHttpMicroserviceExecutor.llamarMicroservicioPost("http://192.168.1.12:5101/cuenta/iniciar", jsonInputString, this);
+        EditText edt_host = findViewById(R.id.cc_edt_host_ip);
+        String host = edt_host.getText().toString();
+        //okHttpMicroserviceExecutor.llamarMicroservicioPost("http://"+host+":5101/cuenta/iniciar", jsonInputString, this);
+        String url = "http://"+host+":5101/cuenta/iniciar";
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    String response = OKHttpMicroserviceExecutor.post(url, jsonInputString);
+                    System.out.println("respuesta: "+response);
+                    inicio_sesion_exitoso(response);
+                } catch (IOException e) {
+                    System.out.println("error en try: "+e);
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+        thread.start();
     }
 
-    public void inicio_sesion_exitoso(String data){
+    public boolean inicio_sesion_exitoso(String data){
         boolean entrada = false;
         String nombre = "";
+        JSONObject player_data = new JSONObject();
+        String id_player = "";
+        String name = "";
+        int mmr = -1;
         try {
             JSONObject jsonObject = new JSONObject(data);
             entrada = jsonObject.optBoolean("entrada", false);
             nombre  = jsonObject.optString("nombre", "");
+            if(entrada){
+                player_data = jsonObject.optJSONObject("player_data");//algo pasa aquí
+                //Toast.makeText(this, "player data json: "+jsonObject.toString(), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(this, "player data text: "+data, Toast.LENGTH_SHORT).show();
+                assert player_data != null;
+                //Toast.makeText(this, "player data: "+player_data.toString(), Toast.LENGTH_SHORT).show();
+                name = player_data.optString("name");
+                id_player = player_data.optString("id_player");
+                mmr = player_data.optInt("mmr");
+            }
         }catch (Exception e){
             e.printStackTrace();
         }
         if (entrada) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    edt_usuario.setBackgroundColor(Color.TRANSPARENT);
+                    edt_password.setBackgroundColor(Color.TRANSPARENT);
+                    edt_password.setText("");
+                    edt_usuario.setText("");
+                }
+            });
             Intent intent = new Intent(this, Menu_juego.class);
+            intent.putExtra("id_player", id_player);
+            intent.putExtra("name", name);
+            intent.putExtra("mmr", mmr);
             startActivity(intent);
         }else{
-            Toast.makeText(this, "error : "+data, Toast.LENGTH_SHORT).show();
+            System.out.println("error :"+nombre);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    edt_usuario.setBackgroundColor(Color.RED);
+                    edt_password.setBackgroundColor(Color.RED);
+                }
+            });
+            //Toast.makeText(this, "error : "+nombre, Toast.LENGTH_SHORT).show();
         }
+        return entrada;
+    }
+
+    private void inicio_rapido(){
+        Intent intent = new Intent(this, Menu_juego.class);
+        startActivity(intent);
     }
 
     @Override

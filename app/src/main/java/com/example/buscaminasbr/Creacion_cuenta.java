@@ -1,9 +1,8 @@
 package com.example.buscaminasbr;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Toast;
+import android.widget.EditText;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,29 +10,27 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-public class Menu_juego extends AppCompatActivity {
+public class Creacion_cuenta extends AppCompatActivity {
 
-    String id_player = "";
-    String name = "";
-    int mmr = -1;
+    EditText edt_usuario;
+    EditText edt_password;
+    EditText edt_nombre;
+    EditText edt_server;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_menu_juego);
+        setContentView(R.layout.activity_creacion_cuenta);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        id_player = getIntent().getStringExtra("id_player");
-        name = getIntent().getStringExtra("name");
-        mmr = getIntent().getIntExtra("mmr", -1);
-        Toast.makeText(this, id_player+" user: "+name+" -> mmr: "+mmr, Toast.LENGTH_SHORT).show();
+        edt_nombre = findViewById(R.id.cc_edt_nombre);
+        edt_usuario = findViewById(R.id.cc_edt_usuario);
+        edt_password = findViewById(R.id.cc_edt_password);
+        edt_server = findViewById(R.id.cc_edt_host_ip);
     }
 
-    public void normal(View v){
-        Intent intent = new Intent(this, Buscaminas_MV.class);
-        startActivity(intent);
-    }
+    public void crear_cuenta(View v){}
 }
