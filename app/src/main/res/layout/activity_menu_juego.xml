@@ -38,20 +38,20 @@
                 android:layout_height="56dp" />
 
             <Button
-                android:id="@+id/button"
+                android:id="@+id/mj_bt_normal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:onClick="normal"
                 android:text="@string/menu_juego_bt_normal" />
 
             <Button
-                android:id="@+id/button2"
+                android:id="@+id/mj_bt_rank"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/menu_juego_bt_rank" />
 
             <Button
-                android:id="@+id/button3"
+                android:id="@+id/mj_bt_ranking"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/menu_juego_bt_ranking" />

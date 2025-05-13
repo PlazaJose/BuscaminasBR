@@ -57,7 +57,7 @@ public class OKHttpMicroserviceExecutor {
         });
     }
 
-    public static String post(String url, String json) throws IOException {
+    public static String post(String url, String json, String default_response) throws IOException {
         RequestBody body = RequestBody.create(json, JSON);
         Request request = new Request.Builder()
                 .url(url)
@@ -70,7 +70,20 @@ public class OKHttpMicroserviceExecutor {
             return response.body().string();
         }catch (Exception e){
             System.out.println("error: "+e);
-            return "{\"entrada\":"+false+", \"nombre\": \""+e+"\"}";
+            return default_response;
+        }
+    }
+
+    public static String get(String url, String default_response){
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            assert response.body() != null;
+            return response.body().string();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 

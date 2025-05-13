@@ -33,6 +33,8 @@ public class Inicio_sesion extends AppCompatActivity {
     SwitchCompat sc_debug_mode;
     MicroserviceExecutor microserviceExecutor;
     OKHttpMicroserviceExecutor okHttpMicroserviceExecutor;
+    String url = "localhost";
+    String host = "localhost";
     Boolean debug_mode = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,14 +95,15 @@ public class Inicio_sesion extends AppCompatActivity {
         String jsonInputString = "{\"id\": \""+datos.optString("id", "noName")+"\", \"pas\": \""+datos.optString("pas", "nopass")+"\"}";
         //microserviceExecutor.llamarMicroservicioPost("http://192.168.1.12:5101/cuenta/iniciar", this, datos);
         EditText edt_host = findViewById(R.id.cc_edt_host_ip);
-        String host = edt_host.getText().toString();
+        host = edt_host.getText().toString();
         //okHttpMicroserviceExecutor.llamarMicroservicioPost("http://"+host+":5101/cuenta/iniciar", jsonInputString, this);
-        String url = "http://"+host+":5101/cuenta/iniciar";
+        url = "http://"+host+":5101/cuenta/iniciar";
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    String response = OKHttpMicroserviceExecutor.post(url, jsonInputString);
+                    String default_respones = "{\"entrada\":"+false+", \"nombre\": \""+"e"+"\"}";
+                    String response = OKHttpMicroserviceExecutor.post(url, jsonInputString, default_respones);
                     System.out.println("respuesta: "+response);
                     inicio_sesion_exitoso(response);
                 } catch (IOException e) {
@@ -150,6 +153,7 @@ public class Inicio_sesion extends AppCompatActivity {
             intent.putExtra("id_player", id_player);
             intent.putExtra("name", name);
             intent.putExtra("mmr", mmr);
+            intent.putExtra("host", host);
             startActivity(intent);
         }else{
             System.out.println("error :"+nombre);

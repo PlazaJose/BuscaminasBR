@@ -3,6 +3,7 @@ package com.example.buscaminasbr;
 import android.os.Bundle;
 import android.widget.GridLayout;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,9 +14,18 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.buscaminasbr.model.Map;
 import com.example.buscaminasbr.view.MiniBM;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class Buscaminas_MV extends AppCompatActivity {
 
     GridLayout gridLayout;
+
+    String id_player = "";
+    String name = "";
+    int mmr = -1;
+    String host = "localhost";
+    int id_match;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,7 +36,23 @@ public class Buscaminas_MV extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        id_player = getIntent().getStringExtra("id_player");
+        name = getIntent().getStringExtra("name");
+        mmr = getIntent().getIntExtra("mmr", -1);
+        id_match = getIntent().getIntExtra("id_match", -1);
+        host = getIntent().getStringExtra("host");
+//        String data_str = getIntent().getStringExtra("match_data");
+//        try {
+//            assert data_str != null;
+//            match_data = new JSONObject(data_str);
+//        } catch (JSONException e) {
+//            throw new RuntimeException(e);
+//        }
+        Toast.makeText(this, id_player+" user: "+name+" -> mmr: "+mmr, Toast.LENGTH_SHORT).show();
+
         setContentView(get_map());
+
     }
 
     public RelativeLayout get_map(){
@@ -37,12 +63,13 @@ public class Buscaminas_MV extends AppCompatActivity {
         gridLayout.setRowCount(map_width);
         gridLayout.setColumnCount(map_height);
 
-        Map map = new Map(this, map_width, map_height, 10);
+        Map map = new Map(this, map_width, map_height, 10, id_match, id_player, name, mmr, host);
         for (int i = 0; i < map.getWidth(); i++) {
             for (int j = 0; j < map.getHeight(); j++) {
                 gridLayout.addView(map.getCuadricula(i, j));
             }
         }
+        //map.set_map(match_data);
 
 
         RelativeLayout relativeLayout = new RelativeLayout(this);

@@ -5,6 +5,10 @@ import android.widget.Toast;
 
 import com.example.buscaminasbr.view.Cuadricula;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.Random;
 
 public class Map {
@@ -16,9 +20,19 @@ public class Map {
     int cuadricula_size = 100;
     int opened = 0;
     boolean game_started = false;
-    public Map(Context context, int width, int height, int mines){
+    String id_player = "";
+    String name = "";
+    int mmr = -1;
+    String host = "localhost";
+    int id_match = -1;
+    public Map(Context context, int width, int height, int mines, int id_match, String id_player, String name, int mmr, String host){
         this.width = width;
         this.height = height;
+        this.id_match = id_match;
+        this.id_player = id_player;
+        this.name = name;
+        this.mmr = mmr;
+        this.host = host;
         int area = width*height;
         this.mines = correct_position(mines, (int) Math.floor((10 * area) / 100.0),(int) Math.floor((40 * area) / 100.0));
         this.cuadriculas = new Cuadricula[width][height];
@@ -61,7 +75,7 @@ public class Map {
         }
     }
 
-    private void set_mines(int si, int sj){
+    private void set_mines_offline(int si, int sj){
         for(int i = 0; i< this.mines; i++){
             Random random = new Random();
             int counter = 0;
@@ -76,6 +90,42 @@ public class Map {
                 counter++;
             }
         }
+    }
+
+    private void set_mines(int si, int sj){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                JSONObject json_map = get_map(si, sj);
+                try {
+                    assert json_map != null;
+                    JSONArray mines = json_map.getJSONArray("mines");
+                    for(int i = 0; i<mines.length();i++){
+                        JSONObject mine = mines.getJSONObject(i);
+                        cuadriculas[mine.getInt("row")][mine.getInt("column")].setiTipo(Cuadricula.TIPO_MINADO);
+                    }
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }).start();
+    }
+    private JSONObject get_map(int si, int sj){
+        String url = "http://"+host+":5104/match/map/"+id_match+"/"+id_player;
+        System.out.println("url en get map: "+url);
+        String default_response = "{\"state\": false, \"message\": \"jugadr o cola no encontrada\"}";
+        String response = OKHttpMicroserviceExecutor.get(url, default_response);
+        JSONObject json_respuesta = null;
+        try {
+            json_respuesta = new JSONObject(response);
+            if(json_respuesta.getBoolean("state")){
+                return json_respuesta.getJSONObject("map");
+                //create_map(json_respuesta.getJSONArray("map"));
+            }
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+        return null;
     }
 
     private void update_cuadriculas(){
