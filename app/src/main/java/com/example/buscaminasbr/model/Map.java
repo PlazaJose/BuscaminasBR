@@ -9,6 +9,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.Random;
 
 public class Map {
@@ -110,7 +111,7 @@ public class Map {
             }
         }).start();
     }
-    private JSONObject get_map(int si, int sj){
+    private JSONObject get_map_old(int si, int sj){
         String url = "http://"+host+":5104/match/map/"+id_match+"/"+id_player;
         System.out.println("url en get map: "+url);
         String default_response = "{\"state\": false, \"message\": \"jugadr o cola no encontrada\"}";
@@ -123,6 +124,25 @@ public class Map {
                 //create_map(json_respuesta.getJSONArray("map"));
             }
         } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+        return null;
+    }
+
+    private JSONObject get_map(int si, int sj){
+        String url = "http://"+host+":5104/match/generate";
+        System.out.println("url en genenrate map: "+url);
+        String default_response = "{\"state\": false, \"message\": \"jugadr o cola no encontrada\"}";
+        String jsonInputString = String.format("{\"id_match\":\"%s\", \"id_player\":\"%s\", \"si\":%s, \"sj\":%s}", id_match, id_player, si, sj);
+        try {
+            String response = OKHttpMicroserviceExecutor.post(url, jsonInputString, default_response);
+            JSONObject json_respuesta = null;
+            json_respuesta = new JSONObject(response);
+            if(json_respuesta.getBoolean("state")){
+                return json_respuesta.getJSONObject("map");
+                //create_map(json_respuesta.getJSONArray("map"));
+            }
+        } catch (JSONException | IOException e) {
             throw new RuntimeException(e);
         }
         return null;
