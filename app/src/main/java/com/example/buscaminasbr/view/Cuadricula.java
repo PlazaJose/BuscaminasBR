@@ -77,12 +77,13 @@ public class Cuadricula extends androidx.appcompat.widget.AppCompatButton {
                 map.update_vecinos(row, column);
                 break;
             case Cuadricula.ESTADO_CERRADO:
-                map.first_update(row, column);
-                String texto = (getiTipo()==Cuadricula.TIPO_MINADO?"*":""+getiMinas());
-                setText(texto);
-                setiEstado((getiTipo()==Cuadricula.TIPO_MINADO?Cuadricula.ESTADO_EXPLOTADO:Cuadricula.ESTADO_ABIERTO));
-                map.update_vecinos(row, column);
-                map.check_win(row, column);
+                if (!map.first_update(row, column)) {
+                    String texto = (getiTipo()==Cuadricula.TIPO_MINADO?"*":""+getiMinas());
+                    setText(texto);
+                    setiEstado((getiTipo()==Cuadricula.TIPO_MINADO?Cuadricula.ESTADO_EXPLOTADO:Cuadricula.ESTADO_ABIERTO));
+                    map.update_vecinos(row, column);
+                    map.check_win(row, column);
+                }
                 break;
             case Cuadricula.ESTADO_BANDERA:
                 setText("?");
@@ -102,6 +103,26 @@ public class Cuadricula extends androidx.appcompat.widget.AppCompatButton {
                 break;
         }
 
+    }
+    public void update(int mines){
+        setiMinas(mines);
+        switch (getiEstado()){
+            case Cuadricula.ESTADO_ABIERTO:
+                String texto = (getiTipo()==Cuadricula.TIPO_MINADO?"*":""+getiMinas());
+                setText(texto);
+                break;
+            case Cuadricula.ESTADO_CERRADO:
+                setText("");
+                break;
+            case Cuadricula.ESTADO_BANDERA:
+                setText("S");
+                break;
+            case Cuadricula.ESTADO_INTERROGANTE:
+                setText("?");
+                break;
+            default:
+                break;
+        }
     }
     public void setiEstado(int new_estado){
         this.iEstado = new_estado;

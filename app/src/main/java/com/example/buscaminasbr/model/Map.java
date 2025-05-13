@@ -54,7 +54,7 @@ public class Map {
 
     public void start_game(int i, int j){
         set_mines(i, j);
-        update_cuadriculas();
+        //update_cuadriculas();
         game_started = true;
         opened = 0;
     }
@@ -105,6 +105,14 @@ public class Map {
                         JSONObject mine = mines.getJSONObject(i);
                         cuadriculas[mine.getInt("row")][mine.getInt("column")].setiTipo(Cuadricula.TIPO_MINADO);
                     }
+                    //update cuadriculas tras finalizar la generación
+                    update_cuadriculas();
+                    //update first
+                    String texto = (cuadriculas[si][sj].getiTipo()==Cuadricula.TIPO_MINADO?"*":""+cuadriculas[si][sj].getiMinas());
+                    cuadriculas[si][sj].setText(texto);
+                    cuadriculas[si][sj].setiEstado((cuadriculas[si][sj].getiTipo()==Cuadricula.TIPO_MINADO?Cuadricula.ESTADO_EXPLOTADO:Cuadricula.ESTADO_ABIERTO));
+                    update_vecinos(si, sj);
+                    check_win(si, sj);
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
                 }
@@ -160,7 +168,7 @@ public class Map {
                         }
                     }
                 }
-                cuadriculas[i][j].setiMinas(mines);
+                cuadriculas[i][j].update(mines);
             }
         }
     }
@@ -187,10 +195,12 @@ public class Map {
         return (li<x&&x<ls);
     }
 
-    public void first_update(int i, int j){
+    public boolean first_update(int i, int j){
         if(!game_started){
             start_game(i, j);
+            return true;
         }
+        return false;
     }
     public void update_vecinos(int i, int j){
         Cuadricula[][] vecinos = get_vecinos(i, j);
@@ -237,6 +247,7 @@ public class Map {
     }
 
     public void check_win(int i, int j){
+        cuadriculas[0][0].setText(""+opened+":"+mines);
         if(!lose(i, j))win();
     }
     public Cuadricula[][] getCuadriculas() {
