@@ -12,7 +12,8 @@ public class MiniBM_controlador implements View.OnTouchListener {
     }
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
-        miniBM.randomize_mines();
+        //miniBM.randomize_mines();
+        //miniBM.update_map();
         return false;
     }
 }

@@ -1,5 +1,7 @@
 package com.example.buscaminasbr.view;
 
+import static java.lang.Thread.sleep;
+
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -10,6 +12,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 
 import com.example.buscaminasbr.controller.MiniBM_controlador;
+import com.example.buscaminasbr.model.OKHttpMicroserviceExecutor;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.security.SecureRandom;
 import java.util.Random;
@@ -24,8 +31,11 @@ public class MiniBM extends androidx.appcompat.widget.AppCompatTextView {
     float c_h;
     SecureRandom random;
     int[][] colors;
-    int [] state_colors = {Color.GREEN, Color.BLACK};
+    int [] state_colors = {Color.BLACK, Color.RED, Color.WHITE, Color.GREEN};
     int[][] map;
+    String host = "localhost";
+    int id_match;
+    String id_player = "";
     public MiniBM(@NonNull Context context) {
         super(context);
         init();
@@ -59,11 +69,65 @@ public class MiniBM extends androidx.appcompat.widget.AppCompatTextView {
         for(int i = 0; i < width_map; i++){
             for(int j = 0; j < height_map; j++){
                 int i_state = random.nextInt(10);
-                map[i][j] = 1;//(i_state<8?1:0);
+                map[i][j] = 0;//(i_state<8?1:0);
                 colors[i][j]= Color.argb(150, random.nextInt(256), random.nextInt(256), random.nextInt(256));
             }
         }
-        randomize_mines();
+        //randomize_mines();
+    }
+
+    public void set_map(String str_json_map){
+        //poner mapa
+        try {
+            JSONObject json_map = new JSONObject(str_json_map);
+            JSONArray moves = json_map.getJSONArray("moves");
+            for(int i = 0; i<moves.length();i++){
+                JSONObject move = moves.getJSONObject(i);
+                if(move.getInt("state")<state_colors.length){
+                    map[move.getInt("row")][move.getInt("column")]=move.getInt("state");
+                }
+            }
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+        //actualizar
+        invalidate();
+    }
+
+    public void set_server_settings(String host, String id_player, int id_match){
+        this.host = host;
+        this.id_match = id_match;
+        this.id_player = id_player;
+        update_map();
+    }
+    public void update_map(){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String url = "http://"+host+":5104/match/map/"+id_match+"/"+id_player;
+                System.out.println("url en get map: "+url);
+                String default_response = "{\"state\": false, \"message\": \"jugadr o cola no encontrada\"}";
+                try {
+                    for(int duracion = 0; duracion<100; duracion++){
+                        String response = OKHttpMicroserviceExecutor.get(url, default_response);
+                        JSONObject json_respuesta = null;
+                        try {
+                            json_respuesta = new JSONObject(response);
+                            if(json_respuesta.getBoolean("state")){
+                                JSONObject jsonObjectMap =  json_respuesta.getJSONObject("map");
+                                set_map(jsonObjectMap.toString());
+                            }
+                        } catch (JSONException e) {
+                            throw new RuntimeException(e);
+                        }
+
+                        sleep(5000);
+                    }
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }).start();
     }
 
     public void randomize_mines(){

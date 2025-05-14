@@ -12,8 +12,11 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.buscaminasbr.model.Map;
+import com.example.buscaminasbr.model.OKHttpMicroserviceExecutor;
+import com.example.buscaminasbr.view.Cuadricula;
 import com.example.buscaminasbr.view.MiniBM;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -26,6 +29,8 @@ public class Buscaminas_MV extends AppCompatActivity {
     int mmr = -1;
     String host = "localhost";
     int id_match;
+    int number_players = 2;
+    MiniBM[] enemies;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +47,7 @@ public class Buscaminas_MV extends AppCompatActivity {
         mmr = getIntent().getIntExtra("mmr", -1);
         id_match = getIntent().getIntExtra("id_match", -1);
         host = getIntent().getStringExtra("host");
+        number_players = getIntent().getIntExtra("number_players",2);
 //        String data_str = getIntent().getStringExtra("match_data");
 //        try {
 //            assert data_str != null;
@@ -52,6 +58,7 @@ public class Buscaminas_MV extends AppCompatActivity {
         Toast.makeText(this, id_player+" user: "+name+" -> mmr: "+mmr, Toast.LENGTH_SHORT).show();
 
         setContentView(get_map());
+        update_enemies();
 
     }
 
@@ -89,7 +96,7 @@ public class Buscaminas_MV extends AppCompatActivity {
         layoutParams.topMargin = 250;
 
         //create enemy viewa
-        MiniBM miniBM = new MiniBM(this);
+        //MiniBM miniBM = new MiniBM(this);
         GridLayout gridLayout_enemys = new GridLayout(this);
         gridLayout_enemys.setRowCount(3);
         gridLayout_enemys.setColumnCount(3);
@@ -101,8 +108,10 @@ public class Buscaminas_MV extends AppCompatActivity {
         layoutParams_enemy.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
         layoutParams_enemy.bottomMargin = 250;
 
-        for(int i = 0; i < 9; i++){
+        enemies = new MiniBM[number_players-1];
+        for(int i = 0; i < number_players-1; i++){
             MiniBM mbm = new MiniBM(this);
+            enemies[i] = mbm;
             gridLayout_enemys.addView(mbm);
         }
 
@@ -113,5 +122,37 @@ public class Buscaminas_MV extends AppCompatActivity {
         relativeLayout.addView(gridLayout);
 
         return relativeLayout;
+    }
+
+    void update_enemies(){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String url = "http://"+host+":5104/match/match/"+id_match;
+                System.out.println("url en get match: "+url);
+                String default_response = "{\"state\": false, \"message\": \"match no encontrada: \", \"match\":null}";
+                String response = OKHttpMicroserviceExecutor.get(url, default_response);
+                try {
+                    JSONObject jsonObjectResponse = new JSONObject(response);
+                    if(jsonObjectResponse.getBoolean("state")){
+                        JSONObject jsonObjectMatch = jsonObjectResponse.getJSONObject("match");
+                        JSONArray jsonArrayJugadores = jsonObjectMatch.getJSONArray("jugadores");
+                        int counter = 0;
+                        for(int i = 0; i<jsonArrayJugadores.length();i++){
+                            JSONObject jugador = jsonArrayJugadores.getJSONObject(i);
+                            if(!jugador.getString("id").equals(id_player)){
+                                if(counter<enemies.length){
+                                    enemies[counter].set_map(jugador.getJSONObject("map").toString());
+                                    enemies[counter].set_server_settings(host, jugador.getString("id"), id_match);
+                                    counter++;
+                                }
+                            }
+                        }
+                    }
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }).start();
     }
 }

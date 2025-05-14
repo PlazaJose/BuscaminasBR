@@ -27,6 +27,7 @@ public class Menu_juego extends AppCompatActivity {
     String name = "";
     int mmr = -1;
     String host = "localhost";
+    int number_players = 2;
     Button bt_normal;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +49,7 @@ public class Menu_juego extends AppCompatActivity {
 
     public void normal(View v){
         String jsonPlayerData = String.format("{\"id_player\":\"%s\",\"name\":\"%s\", \"mmr\":%s}", id_player, name, mmr);
-        String jsonInputString = "{\"player_data\": "+jsonPlayerData+", \"num_players\": "+2+", \"tipo_cola\":0}";
+        String jsonInputString = "{\"player_data\": "+jsonPlayerData+", \"num_players\": "+number_players+", \"tipo_cola\":0}";
         String url = "http://"+host+":5103/cola/unirse";
         String default_response = "{\"message\": 'cola rechazada', \"id_cola\": -1}";
 
@@ -141,6 +142,7 @@ public class Menu_juego extends AppCompatActivity {
         intent.putExtra("mmr", mmr);
         intent.putExtra("host", host);
         intent.putExtra("id_match", id_match);
+        intent.putExtra("number_players", number_players);
         //intent.putExtra("match_data", data.toString());
         startActivity(intent);
     }
