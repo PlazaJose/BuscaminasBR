@@ -108,7 +108,7 @@ public class MiniBM extends androidx.appcompat.widget.AppCompatTextView {
                 System.out.println("url en get map: "+url);
                 String default_response = "{\"state\": false, \"message\": \"jugadr o cola no encontrada\"}";
                 try {
-                    for(int duracion = 0; duracion<100; duracion++){
+                    while(true){
                         String response = OKHttpMicroserviceExecutor.get(url, default_response);
                         JSONObject json_respuesta = null;
                         try {

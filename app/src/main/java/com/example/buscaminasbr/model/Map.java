@@ -1,6 +1,7 @@
 package com.example.buscaminasbr.model;
 
 import android.content.Context;
+import android.text.style.DynamicDrawableSpan;
 import android.widget.Toast;
 
 import com.example.buscaminasbr.view.Cuadricula;
@@ -155,6 +156,27 @@ public class Map {
         }
         return null;
     }
+
+    public void plan_a_push_move(int row, int column, int state){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    String jsonInputString = String.format(
+                            "{\"id_match\": %s, \"id_player\":\"%s\", \"move\":{\"row\":%s,\"column\":%s,\"state\":%s}}"
+                            ,id_match, id_player, row, column, state);
+                    String url = "http://"+host+":5104/match/move";
+                    String default_respones = "{\"state\":"+false+", \"message\": \""+"e"+"\"}";
+                    String response = OKHttpMicroserviceExecutor.post(url, jsonInputString, default_respones);
+                    System.out.println("response on push move: "+response);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }).start();
+    }
+
+    public void plan_b_push_move(){}
 
     private void update_cuadriculas(){
         for (int i = 0; i<this.width; i++){
