@@ -1,5 +1,7 @@
 package com.example.buscaminasbr.model;
 
+import static java.lang.Thread.sleep;
+
 import android.content.Context;
 import android.text.style.DynamicDrawableSpan;
 import android.widget.Toast;
@@ -39,6 +41,8 @@ public class Map {
         this.mines = correct_position(mines, (int) Math.floor((10 * area) / 100.0),(int) Math.floor((40 * area) / 100.0));
         this.cuadriculas = new Cuadricula[width][height];
         set_up(context);
+        //set_game_started();
+        //update_map();
     }
 
     private void set_up(Context context){
@@ -156,6 +160,70 @@ public class Map {
         }
         return null;
     }
+    void set_game_started(){
+        String url = "http://"+host+":5104/match/started/"+id_player;
+        String default_response = "{\"state\": false, \"message\": \"jugadr o cola no encontrada: \"}";
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String response = OKHttpMicroserviceExecutor.get(url, default_response);
+                try {
+                    JSONObject responseJson = new JSONObject(response);
+                    boolean state = responseJson.getBoolean("state");
+                    if(state){
+                        game_started = responseJson.getBoolean("data");
+                    }
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }).start();
+    }
+    private void update_map(){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String url = "http://"+host+":5104/match/map/"+id_match+"/"+id_player;
+                System.out.println("url en get map: "+url);
+                String default_response = "{\"state\": false, \"message\": \"jugadr o cola no encontrada\"}";
+                try {
+                    while(true){
+                        String response = OKHttpMicroserviceExecutor.get(url, default_response);
+                        JSONObject json_respuesta = null;
+                        try {
+                            json_respuesta = new JSONObject(response);
+                            if(json_respuesta.getBoolean("state")){
+                                JSONObject jsonObjectMap =  json_respuesta.getJSONObject("map");
+                                //set map
+                                JSONArray mines = jsonObjectMap.getJSONArray("mines");
+                                for(int i = 0; i<mines.length();i++){
+                                    JSONObject mine = mines.getJSONObject(i);
+                                    cuadriculas[mine.getInt("row")][mine.getInt("column")].setiTipo(Cuadricula.TIPO_MINADO);
+                                }
+
+                                JSONArray moves = jsonObjectMap.getJSONArray("moves");
+                                for(int i = 0; i<moves.length();i++){
+                                    JSONObject move = moves.getJSONObject(i);
+                                    if(move.getInt("state")==3){
+                                        cuadriculas[move.getInt("row")][move.getInt("column")].activate();
+                                    }else{
+                                        cuadriculas[move.getInt("row")][move.getInt("column")].setiEstado(move.getInt("state"));
+                                    }
+                                }
+                                //set_map(jsonObjectMap.toString());
+                            }
+                        } catch (JSONException e) {
+                            throw new RuntimeException(e);
+                        }
+
+                        sleep(5000);
+                    }
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }).start();
+    }
 
     public void plan_a_push_move(int row, int column, int state){
         new Thread(new Runnable() {
@@ -197,14 +265,13 @@ public class Map {
 
     private Cuadricula[][] get_vecinos(int i, int j){
         Cuadricula[][] vecinos = new Cuadricula[3][3];
-        for(int vi = -1; vi < 2; vi++){
-            for(int vj = -1; vj < 2; vj++){
-                int ni = i+vi;
-                int nj = j+vj;
-                boolean validate = is_betwin(ni, -1, this.width)&&is_betwin(nj, -1, this.height);
-                vecinos[vi+1][vj+1] = (validate?cuadriculas[ni][nj]:null);
+        for(int vi = -1; vi < 2; vi++)
+            for (int vj = -1; vj < 2; vj++) {
+                int ni = i + vi;
+                int nj = j + vj;
+                boolean validate = is_betwin(ni, -1, this.width) && is_betwin(nj, -1, this.height);
+                vecinos[vi + 1][vj + 1] = (validate ? cuadriculas[ni][nj] : null);
             }
-        }
         return vecinos;
     }
     private int correct_position(int x,int li,int ls){

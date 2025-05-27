@@ -102,7 +102,6 @@ public class Cuadricula extends androidx.appcompat.widget.AppCompatButton {
                 setiEstado(Cuadricula.ESTADO_CERRADO);
                 break;
         }
-        map.plan_a_push_move(row, column, getiEstado());
 
     }
     public void update(int mines){
@@ -151,6 +150,7 @@ public class Cuadricula extends androidx.appcompat.widget.AppCompatButton {
                 change_collor(100, 110, 100);
                 break;
         }
+        map.plan_a_push_move(row, column, getiEstado());
     }
     public int getiEstado(){
         return this.iEstado;

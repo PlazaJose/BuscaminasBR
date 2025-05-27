@@ -48,12 +48,45 @@ public class Menu_juego extends AppCompatActivity {
     }
 
     public void normal(View v){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                //verificar si ya se había unido a una partida
+                int match_id = -1;
+                String url = "http://"+host+":5104/match/find/"+id_player;
+                String default_response = "{\"state\": false, \"message\": \"jugadr o cola no encontrada: \"}";
+                String response = OKHttpMicroserviceExecutor.get(url, default_response);
+                try {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(bt_normal.getContext(), "respuesta recibida: "+response, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    System.out.println("wtf respuesta en buscar match existente: "+response);
+                    //volver a la partida si la había
+                    JSONObject responseJson = new JSONObject(response);
+                    boolean state = responseJson.getBoolean("state");
+                    if(state){
+                        match_id = responseJson.getInt("match");
+                        start_match(match_id);
+                    }else{
+                        //nuscar una cola en caso de no tener partida iniciada
+                        buscar_cola();
+                    }
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }).start();
+    }
+    public void  buscar_cola(){
         String jsonPlayerData = String.format("{\"id_player\":\"%s\",\"name\":\"%s\", \"mmr\":%s}", id_player, name, mmr);
         String jsonInputString = "{\"player_data\": "+jsonPlayerData+", \"num_players\": "+number_players+", \"tipo_cola\":0}";
         String url = "http://"+host+":5103/cola/unirse";
         String default_response = "{\"message\": 'cola rechazada', \"id_cola\": -1}";
 
-        Toast.makeText(this, "url: "+url, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "url: "+url, Toast.LENGTH_SHORT).show();
         System.out.println("mi json: "+jsonInputString);
 
         Thread thread = new Thread(new Runnable() {
@@ -70,7 +103,6 @@ public class Menu_juego extends AppCompatActivity {
         });
         thread.start();
     }
-
     private void esperar_cola(String data){
         int id_cola = -1;
         try {

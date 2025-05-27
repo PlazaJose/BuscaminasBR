@@ -1,6 +1,8 @@
 package com.example.buscaminasbr;
 
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -12,13 +14,15 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.buscaminasbr.model.Map;
+import com.example.buscaminasbr.model.Messages_manager;
 import com.example.buscaminasbr.model.OKHttpMicroserviceExecutor;
-import com.example.buscaminasbr.view.Cuadricula;
 import com.example.buscaminasbr.view.MiniBM;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Random;
 
 public class Buscaminas_MV extends AppCompatActivity {
 
@@ -31,6 +35,7 @@ public class Buscaminas_MV extends AppCompatActivity {
     int id_match;
     int number_players = 2;
     MiniBM[] enemies;
+    Messages_manager messages_manager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,6 +63,7 @@ public class Buscaminas_MV extends AppCompatActivity {
         Toast.makeText(this, id_player+" user: "+name+" -> mmr: "+mmr, Toast.LENGTH_SHORT).show();
 
         setContentView(get_map());
+        messages_manager = new Messages_manager(this, host, id_match, id_player, name);
         update_enemies();
 
     }
@@ -115,6 +121,18 @@ public class Buscaminas_MV extends AppCompatActivity {
             gridLayout_enemys.addView(mbm);
         }
 
+        Button send_emote = new Button(this);
+        send_emote.setText("(-.-)");
+        gridLayout_enemys.addView(send_emote);
+        send_emote.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String[] emotes = {"GG", "GJ", "WP"};
+                String message = emotes[new Random().nextInt(emotes.length)];
+                mensaje(message);
+            }
+        });
+
         //gridLayout_enemys.addView(miniBM);
         //add enemy views to relativelayout
         relativeLayout.addView(gridLayout_enemys);
@@ -155,4 +173,23 @@ public class Buscaminas_MV extends AppCompatActivity {
             }
         }).start();
     }
+
+    public void on_message(JSONObject data){
+        String message = "";
+        try {
+            message = data.getString("name")+" : "+ data.getString("message");
+        } catch (JSONException e) {
+            message = e.getMessage();
+            throw new RuntimeException(e);
+        }
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    void mensaje(String mensaje){
+        Toast.makeText(this, mensaje, Toast.LENGTH_SHORT).show();
+        System.out.println("el mensaje enviado: "+mensaje);
+        messages_manager.send_message(mensaje);
+    }
+
+
 }
