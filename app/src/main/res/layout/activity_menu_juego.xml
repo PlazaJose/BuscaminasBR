@@ -37,6 +37,19 @@
                 android:layout_width="match_parent"
                 android:layout_height="56dp" />
 
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/menu_juego_tv_number_players" />
+
+            <Spinner
+                android:id="@+id/mj_spn_nplayers"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minWidth="48dp"
+                android:minHeight="48dp"/>
+
             <Button
                 android:id="@+id/mj_bt_normal"
                 android:layout_width="match_parent"
@@ -48,13 +61,32 @@
                 android:id="@+id/mj_bt_rank"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:onClick="rank"
                 android:text="@string/menu_juego_bt_rank" />
 
             <Button
                 android:id="@+id/mj_bt_ranking"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:onClick="ranking"
                 android:text="@string/menu_juego_bt_ranking" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="56dp" />
+
+            <LinearLayout
+                android:id="@+id/mj_ll_ranking"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/textView5"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/menu_juego_tv_ranking" />
+            </LinearLayout>
         </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

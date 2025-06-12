@@ -15,7 +15,6 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.example.buscaminasbr.model.MicroserviceExecutor;
 import com.example.buscaminasbr.model.OKHttpMicroserviceExecutor;
 
 import org.json.JSONException;
@@ -31,10 +30,9 @@ public class Inicio_sesion extends AppCompatActivity {
     TextView tv_forgot_pass;
     TextView tv_title;
     SwitchCompat sc_debug_mode;
-    MicroserviceExecutor microserviceExecutor;
     OKHttpMicroserviceExecutor okHttpMicroserviceExecutor;
     String url = "localhost";
-    String host = "localhost";
+    String host = "bmbr.ddns.net";
     Boolean debug_mode = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +51,6 @@ public class Inicio_sesion extends AppCompatActivity {
         tv_title = findViewById(R.id.tv_cc_title);
         sc_debug_mode = findViewById(R.id.is_sc_debug_mode);
         setListeners();
-        microserviceExecutor = new MicroserviceExecutor();
         okHttpMicroserviceExecutor = new OKHttpMicroserviceExecutor();
     }
     private void setListeners(){
@@ -75,7 +72,8 @@ public class Inicio_sesion extends AppCompatActivity {
     }
 
     private void sign_up(){
-        Toast.makeText(this, "Botón sign up pressed", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(this, Creacion_cuenta.class);
+        startActivity(intent);
     }
     private void forgot_pass(){
         Toast.makeText(this, "Botón forgot password pressed", Toast.LENGTH_SHORT).show();
@@ -93,9 +91,8 @@ public class Inicio_sesion extends AppCompatActivity {
             throw new RuntimeException(e);
         }
         String jsonInputString = "{\"id\": \""+datos.optString("id", "noName")+"\", \"pas\": \""+datos.optString("pas", "nopass")+"\"}";
-        //microserviceExecutor.llamarMicroservicioPost("http://192.168.1.12:5101/cuenta/iniciar", this, datos);
         EditText edt_host = findViewById(R.id.cc_edt_host_ip);
-        host = edt_host.getText().toString();
+        if(!edt_host.getText().toString().isEmpty())host = edt_host.getText().toString();
         //okHttpMicroserviceExecutor.llamarMicroservicioPost("http://"+host+":5101/cuenta/iniciar", jsonInputString, this);
         url = "http://"+host+":5101/cuenta/iniciar";
         Thread thread = new Thread(new Runnable() {
@@ -154,6 +151,7 @@ public class Inicio_sesion extends AppCompatActivity {
             intent.putExtra("name", name);
             intent.putExtra("mmr", mmr);
             intent.putExtra("host", host);
+            intent.putExtra("debug_mode", debug_mode);
             startActivity(intent);
         }else{
             System.out.println("error :"+nombre);
@@ -171,12 +169,8 @@ public class Inicio_sesion extends AppCompatActivity {
 
     private void inicio_rapido(){
         Intent intent = new Intent(this, Menu_juego.class);
+        intent.putExtra("debug_mode", debug_mode);
         startActivity(intent);
     }
 
-    @Override
-    protected void onDestroy() {
-        microserviceExecutor.cerrarExecutor();
-        super.onDestroy();
-    }
 }

@@ -322,7 +322,7 @@ public class Map {
     private boolean lose(int i, int j){
         if(cuadriculas[i][j].getiTipo()==Cuadricula.TIPO_MINADO){
             Toast.makeText(cuadriculas[0][0].getContext(), "You lost", Toast.LENGTH_SHORT).show();
-            reset();
+            //reset();
             return true;
         }
         return false;
@@ -331,12 +331,12 @@ public class Map {
         opened++;
         if(opened+mines==width*height){
             Toast.makeText(cuadriculas[0][0].getContext(), "You Won", Toast.LENGTH_SHORT).show();
-            reset();
+            //reset();
         }
     }
 
     public void check_win(int i, int j){
-        cuadriculas[0][0].setText(""+opened+":"+mines);
+        //cuadriculas[0][0].setText(""+opened+":"+mines);
         if(!lose(i, j))win();
     }
     public Cuadricula[][] getCuadriculas() {

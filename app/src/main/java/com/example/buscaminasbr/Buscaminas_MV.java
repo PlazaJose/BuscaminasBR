@@ -4,7 +4,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.GridLayout;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -17,11 +19,13 @@ import com.example.buscaminasbr.model.Map;
 import com.example.buscaminasbr.model.Messages_manager;
 import com.example.buscaminasbr.model.OKHttpMicroserviceExecutor;
 import com.example.buscaminasbr.view.MiniBM;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.Random;
 
 public class Buscaminas_MV extends AppCompatActivity {
@@ -36,6 +40,10 @@ public class Buscaminas_MV extends AppCompatActivity {
     int number_players = 2;
     MiniBM[] enemies;
     Messages_manager messages_manager;
+    LinearLayout mv_ll_messages;
+    RelativeLayout mv_relative_layout;
+    FloatingActionButton mv_fab_add_message;
+    boolean debug_mode = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +61,7 @@ public class Buscaminas_MV extends AppCompatActivity {
         id_match = getIntent().getIntExtra("id_match", -1);
         host = getIntent().getStringExtra("host");
         number_players = getIntent().getIntExtra("number_players",2);
+        debug_mode = getIntent().getBooleanExtra("debug_mode", false);
 //        String data_str = getIntent().getStringExtra("match_data");
 //        try {
 //            assert data_str != null;
@@ -62,8 +71,21 @@ public class Buscaminas_MV extends AppCompatActivity {
 //        }
         Toast.makeText(this, id_player+" user: "+name+" -> mmr: "+mmr, Toast.LENGTH_SHORT).show();
 
-        setContentView(get_map());
-        messages_manager = new Messages_manager(this, host, id_match, id_player, name);
+        mv_ll_messages = findViewById(R.id.mv_ll_messages);
+        mv_relative_layout = findViewById(R.id.mv_relative_layout);
+        mv_fab_add_message = findViewById(R.id.mv_fab_add_message);
+        mv_fab_add_message.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String[] emotes = {"GG", "GJ", "WP"};
+                String message = emotes[new Random().nextInt(emotes.length)];
+                mensaje(message);
+            }
+        });
+
+        //setContentView(get_map());
+        mv_relative_layout.addView(get_map());
+        if(!debug_mode)messages_manager = new Messages_manager(this, host, id_match, id_player, name);
         update_enemies();
 
     }
@@ -123,7 +145,7 @@ public class Buscaminas_MV extends AppCompatActivity {
 
         Button send_emote = new Button(this);
         send_emote.setText("(-.-)");
-        gridLayout_enemys.addView(send_emote);
+        //gridLayout_enemys.addView(send_emote);
         send_emote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -143,6 +165,9 @@ public class Buscaminas_MV extends AppCompatActivity {
     }
 
     void update_enemies(){
+        if (debug_mode){
+            return;
+        }
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -183,13 +208,36 @@ public class Buscaminas_MV extends AppCompatActivity {
             throw new RuntimeException(e);
         }
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        TextView tv_message = new TextView(this);
+        tv_message.setText(message);
+        mv_ll_messages.addView(tv_message);
     }
 
     void mensaje(String mensaje){
         Toast.makeText(this, mensaje, Toast.LENGTH_SHORT).show();
         System.out.println("el mensaje enviado: "+mensaje);
+        if (debug_mode){
+            return;
+        }
         messages_manager.send_message(mensaje);
     }
 
-
+    @Override
+    protected void onStop() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    String jsonInputString = "{\"id_player\":\"" + id_player + "\", \"id_match\":" + id_match + "}";
+                    String url = "http://"+host+":5104/match/abandonar";
+                    String default_respones = "{\"state\":"+false+", \"message\": \""+"e"+"\"}";
+                    String response = OKHttpMicroserviceExecutor.post(url, jsonInputString, default_respones);
+                    System.out.println("response on push move: "+response);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }).start();
+        super.onStop();
+    }
 }

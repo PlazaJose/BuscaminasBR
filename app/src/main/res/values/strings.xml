@@ -22,8 +22,13 @@
     <string name="menu_juego_bt_rank">RANK</string>
     <string name="menu_juego_bt_normal">NORMAL</string>
     <string name="menu_juego_bt_ranking">VER RANKING</string>
+    <string name="menu_juego_tv_number_players">NUMERO DE JUGADORES</string>
+    <string name="menu_juego_tv_ranking">NUMERO DE JUGADORES</string>
     <string name="title_activity_message_view">Message_view</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
+    <string name="title_buscaminas_mv_text">BMBR</string>
+    <string name="messages_title_text">MENSAJES</string>
+    <string name="floating_add_message_description">add message</string>
 </resources>

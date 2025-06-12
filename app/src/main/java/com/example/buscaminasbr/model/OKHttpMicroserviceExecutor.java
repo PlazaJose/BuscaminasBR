@@ -83,7 +83,9 @@ public class OKHttpMicroserviceExecutor {
             assert response.body() != null;
             return response.body().string();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.out.println("error: "+e);
+            return default_response;
+            //throw new RuntimeException(e);
         }
     }
 
